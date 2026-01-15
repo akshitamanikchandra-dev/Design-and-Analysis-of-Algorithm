@@ -1,0 +1,81 @@
+#include <stdio.h>
+#include <limits.h>
+
+#define MAX_SIZE 20
+
+int N;
+int cost[MAX_SIZE][MAX_SIZE];
+int bestCost = INT_MAX;
+int currentAssignment[MAX_SIZE];
+int assignedServers[MAX_SIZE];
+int bestAssignment[MAX_SIZE];
+
+void updateBestSolution(int currentCost) {
+    if (currentCost < bestCost) {
+        bestCost = currentCost;
+        for (int i = 0; i < N; i++) {
+            bestAssignment[i] = currentAssignment[i];
+        }
+    }
+}
+
+void branchAndBound(int task, int currentCost) {
+
+    if (currentCost >= bestCost) {
+        return;
+    }
+
+    if (task == N) {
+        updateBestSolution(currentCost);
+        return;
+    }
+
+    for (int server = 0; server < N; server++) {
+
+        if (!assignedServers[server]) {
+
+            assignedServers[server] = 1;
+            currentAssignment[task] = server;
+
+            branchAndBound(task + 1, currentCost + cost[task][server]);
+
+            assignedServers[server] = 0;
+        }
+    }
+}
+
+int main() {
+    printf("Enter number of tasks/servers (N): ");
+    if (scanf("%d", &N) != 1 || N > MAX_SIZE) {
+        printf("Invalid input or N too large.\n");
+        return 1;
+    }
+
+    printf("Enter the cost matrix (%d x %d).\n", N, N);
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            printf("Cost for Task %d to Server %d: ", i, j);
+            scanf("%d", &cost[i][j]);
+        }
+    }
+
+    for (int i = 0; i < N; i++) {
+        assignedServers[i] = 0;
+    }
+
+    branchAndBound(0, 0);
+
+    printf("\n==================================\n");
+    if (bestCost == INT_MAX) {
+        printf("No valid assignment found.\n");
+    } else {
+        printf("Minimum Total Cost Found: %d\n", bestCost);
+        printf("Optimal Assignment:\n");
+        for (int i = 0; i < N; i++) {
+            printf("  Task %d -> Server %d\n", i, bestAssignment[i]);
+        }
+    }
+    printf("==================================\n");
+
+    return 0;
+}
