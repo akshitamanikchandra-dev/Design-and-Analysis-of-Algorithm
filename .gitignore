@@ -1,0 +1,18 @@
+# Compiled binaries
+task_assignment
+*.exe
+*.out
+*.o
+
+# Build artifacts
+*.d
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor directories
+.vscode/
+.idea/
+*.swp
+*~
